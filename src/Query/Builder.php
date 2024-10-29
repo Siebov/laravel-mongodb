@@ -192,7 +192,7 @@ class Builder extends BaseBuilder
     /**
      * Set the projections.
      *
-     * @param  array $columns
+     * @param array $columns
      *
      * @return $this
      */
@@ -206,7 +206,7 @@ class Builder extends BaseBuilder
     /**
      * The maximum amount of seconds to allow the query to run.
      *
-     * @param  int $seconds
+     * @param int $seconds
      *
      * @return $this
      */
@@ -220,7 +220,7 @@ class Builder extends BaseBuilder
     /**
      * Set the cursor hint.
      *
-     * @param  mixed $index
+     * @param mixed $index
      *
      * @return $this
      */
@@ -240,7 +240,7 @@ class Builder extends BaseBuilder
     /** @inheritdoc */
     public function value($column)
     {
-        $result = (array) $this->first([$column]);
+        $result = (array)$this->first([$column]);
 
         return Arr::get($result, $column);
     }
@@ -309,7 +309,7 @@ class Builder extends BaseBuilder
 
         // Use MongoDB's aggregation framework when using grouping or aggregation functions.
         if ($this->groups || $this->aggregate) {
-            $group   = [];
+            $group = [];
             $unwinds = [];
 
             // Add grouping columns to the $group part of the aggregation pipeline.
@@ -341,7 +341,7 @@ class Builder extends BaseBuilder
                     $splitColumns = explode('.*.', $column);
                     if (count($splitColumns) === 2) {
                         $unwinds[] = $splitColumns[0];
-                        $column    = implode('.', $splitColumns);
+                        $column = implode('.', $splitColumns);
                     }
 
                     $aggregations = blank($this->aggregate['columns']) ? [] : $this->aggregate['columns'];
@@ -473,8 +473,8 @@ class Builder extends BaseBuilder
     /**
      * Execute the query as a fresh "select" statement.
      *
-     * @param  array $columns
-     * @param  bool  $returnLazy
+     * @param array $columns
+     * @param bool $returnLazy
      *
      * @return array|static[]|Collection|LazyCollection
      */
@@ -504,7 +504,7 @@ class Builder extends BaseBuilder
         if (is_int($result)) {
             $result = [
                 [
-                    '_id'       => null,
+                    '_id' => null,
                     'aggregate' => $result,
                 ],
             ];
@@ -557,7 +557,7 @@ class Builder extends BaseBuilder
     public function aggregate($function = null, $columns = ['*'])
     {
         if ($function === null) {
-            if (! trait_exists(FluentFactoryTrait::class)) {
+            if (!trait_exists(FluentFactoryTrait::class)) {
                 // This error will be unreachable when the mongodb/builder package will be merged into mongodb/mongodb
                 throw new BadMethodCallException('Aggregation builder requires package mongodb/builder 0.2+');
             }
@@ -592,12 +592,12 @@ class Builder extends BaseBuilder
         // Once we have executed the query, we will reset the aggregate property so
         // that more select queries can be executed against the database without
         // the aggregate value getting in the way when the grammar builds it.
-        $this->aggregate          = null;
-        $this->columns            = $previousColumns;
+        $this->aggregate = null;
+        $this->columns = $previousColumns;
         $this->bindings['select'] = $previousSelectBindings;
 
         if (isset($results[0])) {
-            $result = (array) $results[0];
+            $result = (array)$results[0];
 
             return $result['aggregate'];
         }
@@ -636,7 +636,7 @@ class Builder extends BaseBuilder
             };
         }
 
-        $column = (string) $column;
+        $column = (string)$column;
         if ($column === 'natural') {
             $this->orders['$natural'] = $direction;
         } else {
@@ -655,16 +655,16 @@ class Builder extends BaseBuilder
             $values = $values->all();
         }
 
-        if (is_array($values) && (! array_is_list($values) || count($values) !== 2)) {
+        if (is_array($values) && (!array_is_list($values) || count($values) !== 2)) {
             throw new InvalidArgumentException('Between $values must be a list with exactly two elements: [min, max]');
         }
 
         $this->wheres[] = [
-            'column'  => $column,
-            'type'    => $type,
+            'column' => $column,
+            'type' => $type,
             'boolean' => $boolean,
-            'values'  => $values,
-            'not'     => $not,
+            'values' => $values,
+            'not' => $not,
         ];
 
         return $this;
@@ -685,13 +685,13 @@ class Builder extends BaseBuilder
         foreach ($values as $value) {
             // As soon as we find a value that is not an array we assume the user is
             // inserting a single document.
-            if (! is_array($value)) {
+            if (!is_array($value)) {
                 $batch = false;
                 break;
             }
         }
 
-        if (! $batch) {
+        if (!$batch) {
             $values = [$values];
         }
 
@@ -713,7 +713,7 @@ class Builder extends BaseBuilder
 
         $result = $this->collection->insertOne($values, $options);
 
-        if (! $result->isAcknowledged()) {
+        if (!$result->isAcknowledged()) {
             return null;
         }
 
@@ -754,18 +754,18 @@ class Builder extends BaseBuilder
         }
 
         // Single document provided
-        if (! array_is_list($values)) {
+        if (!array_is_list($values)) {
             $values = [$values];
         }
 
         $this->applyBeforeQueryCallbacks();
 
         $options = $this->inheritConnectionOptions();
-        $uniqueBy = array_fill_keys((array) $uniqueBy, 1);
+        $uniqueBy = array_fill_keys((array)$uniqueBy, 1);
 
         // If no update fields are specified, all fields are updated
         if ($update !== null) {
-            $update = array_fill_keys((array) $update, 1);
+            $update = array_fill_keys((array)$update, 1);
         }
 
         $bulk = [];
@@ -795,9 +795,9 @@ class Builder extends BaseBuilder
     /** @inheritdoc */
     public function increment($column, $amount = 1, array $extra = [], array $options = [])
     {
-        $query = ['$inc' => [(string) $column => $amount]];
+        $query = ['$inc' => [(string)$column => $amount]];
 
-        if (! empty($extra)) {
+        if (!empty($extra)) {
             $query['$set'] = $extra;
         }
 
@@ -867,8 +867,8 @@ class Builder extends BaseBuilder
             $this->where('_id', '=', $id);
         }
 
-        $wheres  = $this->compileWheres();
-        $wheres  = $this->aliasIdForQuery($wheres);
+        $wheres = $this->compileWheres();
+        $wheres = $this->aliasIdForQuery($wheres);
         $options = $this->inheritConnectionOptions();
 
         /**
@@ -901,7 +901,7 @@ class Builder extends BaseBuilder
     public function truncate(): bool
     {
         $options = $this->inheritConnectionOptions();
-        $result  = $this->collection->deleteMany([], $options);
+        $result = $this->collection->deleteMany([], $options);
 
         return $result->isAcknowledged();
     }
@@ -909,12 +909,12 @@ class Builder extends BaseBuilder
     /**
      * Get an array with the values of a given column.
      *
-     * @deprecated Use pluck instead.
-     *
-     * @param  string $column
-     * @param  string $key
+     * @param string $column
+     * @param string $key
      *
      * @return Collection
+     * @deprecated Use pluck instead.
+     *
      */
     public function lists($column, $key = null)
     {
@@ -941,9 +941,9 @@ class Builder extends BaseBuilder
     /**
      * Append one or more values to an array.
      *
-     * @param  string|array $column
-     * @param  mixed        $value
-     * @param  bool         $unique
+     * @param string|array $column
+     * @param mixed $value
+     * @param bool $unique
      *
      * @return int
      */
@@ -957,14 +957,15 @@ class Builder extends BaseBuilder
 
         if (is_array($column)) {
             if ($value !== null) {
-                throw new InvalidArgumentException(sprintf('2nd argument of %s() must be "null" when 1st argument is an array. Got "%s" instead.', __METHOD__, get_debug_type($value)));
+                throw new InvalidArgumentException(sprintf('2nd argument of %s() must be "null" when 1st argument is an array. Got "%s" instead.',
+                    __METHOD__, get_debug_type($value)));
             }
 
             $query = [$operator => $column];
         } elseif ($batch) {
-            $query = [$operator => [(string) $column => ['$each' => $value]]];
+            $query = [$operator => [(string)$column => ['$each' => $value]]];
         } else {
-            $query = [$operator => [(string) $column => $value]];
+            $query = [$operator => [(string)$column => $value]];
         }
 
         return $this->performUpdate($query);
@@ -973,8 +974,8 @@ class Builder extends BaseBuilder
     /**
      * Remove one or more values from an array.
      *
-     * @param  string|array $column
-     * @param  mixed        $value
+     * @param string|array $column
+     * @param mixed $value
      *
      * @return int
      */
@@ -998,13 +999,13 @@ class Builder extends BaseBuilder
     /**
      * Remove one or more fields.
      *
-     * @param  string|string[] $columns
+     * @param string|string[] $columns
      *
      * @return int
      */
     public function drop($columns)
     {
-        if (! is_array($columns)) {
+        if (!is_array($columns)) {
             $columns = [$columns];
         }
 
@@ -1059,7 +1060,7 @@ class Builder extends BaseBuilder
     protected function performUpdate(array $update, array $options = [])
     {
         // Update multiple items by default.
-        if (! array_key_exists('multiple', $options)) {
+        if (!array_key_exists('multiple', $options)) {
             $options['multiple'] = true;
         }
 
@@ -1080,7 +1081,7 @@ class Builder extends BaseBuilder
     /**
      * Convert a key to ObjectID if needed.
      *
-     * @param  mixed $id
+     * @param mixed $id
      *
      * @return mixed
      */
@@ -1104,10 +1105,10 @@ class Builder extends BaseBuilder
      * If 2 arguments, the signature is: where(string $column, mixed $value)
      * If 3 arguments, the signature is: where(string $colum, string $operator, mixed $value)
      *
-     * @param  Closure|string|array $column
-     * @param  mixed                $operator
-     * @param  mixed                $value
-     * @param  string               $boolean
+     * @param Closure|string|array $column
+     * @param mixed $operator
+     * @param mixed $value
+     * @param string $boolean
      *
      * @return $this
      */
@@ -1124,12 +1125,14 @@ class Builder extends BaseBuilder
             }
         }
 
-        if (func_num_args() === 1 && ! is_array($column) && ! is_callable($column)) {
-            throw new ArgumentCountError(sprintf('Too few arguments to function %s(%s), 1 passed and at least 2 expected when the 1st is not an array or a callable', __METHOD__, var_export($column, true)));
+        if (func_num_args() === 1 && !is_array($column) && !is_callable($column)) {
+            throw new ArgumentCountError(sprintf('Too few arguments to function %s(%s), 1 passed and at least 2 expected when the 1st is not an array or a callable',
+                __METHOD__, var_export($column, true)));
         }
 
         if (is_float($column) || is_bool($column) || $column === null) {
-            throw new InvalidArgumentException(sprintf('First argument of %s must be a field path as "string". Got "%s"', __METHOD__, get_debug_type($column)));
+            throw new InvalidArgumentException(sprintf('First argument of %s must be a field path as "string". Got "%s"',
+                __METHOD__, get_debug_type($column)));
         }
 
         return parent::where(...$params);
@@ -1161,7 +1164,7 @@ class Builder extends BaseBuilder
 
             // Convert column name to string to use as array key
             if (isset($where['column'])) {
-                $where['column'] = (string) $where['column'];
+                $where['column'] = (string)$where['column'];
 
                 // Compatibility with Eloquent queries that uses "id" instead of MongoDB's _id
                 if ($where['column'] === 'id') {
@@ -1236,9 +1239,9 @@ class Builder extends BaseBuilder
 
     protected function compileWhereBasic(array $where): array
     {
-        $column   = $where['column'];
+        $column = $where['column'];
         $operator = $where['operator'];
-        $value    = $where['value'];
+        $value = $where['value'];
 
         // Replace like or not like with a Regex instance.
         if (in_array($operator, ['like', 'not like'])) {
@@ -1264,36 +1267,36 @@ class Builder extends BaseBuilder
             // For inverse like operations, we can just use the $not operator with the Regex
             $operator = $operator === 'like' ? '=' : 'not';
             // phpcs:ignore Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace
-        }
-
-        // Manipulate regex operations.
+        } // Manipulate regex operations.
         elseif (in_array($operator, ['regex', 'not regex'])) {
             // Automatically convert regular expression strings to Regex objects.
             if (is_string($value)) {
                 // Detect the delimiter and validate the preg pattern
                 $delimiter = substr($value, 0, 1);
-                if (! in_array($delimiter, self::REGEX_DELIMITERS)) {
-                    throw new LogicException(sprintf('Missing expected starting delimiter in regular expression "%s", supported delimiters are: %s', $value, implode(' ', self::REGEX_DELIMITERS)));
+                if (!in_array($delimiter, self::REGEX_DELIMITERS)) {
+                    throw new LogicException(sprintf('Missing expected starting delimiter in regular expression "%s", supported delimiters are: %s',
+                        $value, implode(' ', self::REGEX_DELIMITERS)));
                 }
 
                 $e = explode($delimiter, $value);
                 // We don't try to detect if the last delimiter is escaped. This would be an invalid regex.
                 if (count($e) < 3) {
-                    throw new LogicException(sprintf('Missing expected ending delimiter "%s" in regular expression "%s"', $delimiter, $value));
+                    throw new LogicException(sprintf('Missing expected ending delimiter "%s" in regular expression "%s"',
+                        $delimiter, $value));
                 }
 
                 // Flags are after the last delimiter
                 $flags = end($e);
                 // Extract the regex string between the delimiters
                 $regstr = substr($value, 1, -1 - strlen($flags));
-                $value  = new Regex($regstr, $flags);
+                $value = new Regex($regstr, $flags);
             }
 
             // For inverse regex operations, we can just use the $not operator with the Regex
             $operator = $operator === 'regex' ? '=' : 'not';
         }
 
-        if (! isset($operator) || $operator === '=' || $operator === 'eq') {
+        if (!isset($operator) || $operator === '=' || $operator === 'eq') {
             $query = [$column => $value];
         } else {
             $query = [$column => ['$' . $operator => $value]];
@@ -1327,7 +1330,7 @@ class Builder extends BaseBuilder
     protected function compileWhereNull(array $where): array
     {
         $where['operator'] = '=';
-        $where['value']    = null;
+        $where['value'] = null;
 
         return $this->compileWhereBasic($where);
     }
@@ -1335,7 +1338,7 @@ class Builder extends BaseBuilder
     protected function compileWhereNotNull(array $where): array
     {
         $where['operator'] = 'ne';
-        $where['value']    = null;
+        $where['value'] = null;
 
         return $this->compileWhereBasic($where);
     }
@@ -1343,7 +1346,7 @@ class Builder extends BaseBuilder
     protected function compileWhereBetween(array $where): array
     {
         $column = $where['column'];
-        $not    = $where['not'];
+        $not = $where['not'];
         $values = $where['values'];
 
         if ($not) {
@@ -1374,7 +1377,7 @@ class Builder extends BaseBuilder
     protected function compileWhereDate(array $where): array
     {
         $startOfDay = new UTCDateTime(Carbon::parse($where['value'])->startOfDay());
-        $endOfDay   = new UTCDateTime(Carbon::parse($where['value'])->endOfDay());
+        $endOfDay = new UTCDateTime(Carbon::parse($where['value'])->endOfDay());
 
         return match ($where['operator']) {
             'eq', '=' => [
@@ -1408,7 +1411,7 @@ class Builder extends BaseBuilder
                     [
                         '$month' => '$' . $where['column'],
                     ],
-                    (int) $where['value'],
+                    (int)$where['value'],
                 ],
             ],
         ];
@@ -1422,7 +1425,7 @@ class Builder extends BaseBuilder
                     [
                         '$dayOfMonth' => '$' . $where['column'],
                     ],
-                    (int) $where['value'],
+                    (int)$where['value'],
                 ],
             ],
         ];
@@ -1436,7 +1439,7 @@ class Builder extends BaseBuilder
                     [
                         '$year' => '$' . $where['column'],
                     ],
-                    (int) $where['value'],
+                    (int)$where['value'],
                 ],
             ],
         ];
@@ -1444,8 +1447,10 @@ class Builder extends BaseBuilder
 
     protected function compileWhereTime(array $where): array
     {
-        if (! is_string($where['value']) || ! preg_match('/^[0-2][0-9](:[0-6][0-9](:[0-6][0-9])?)?$/', $where['value'], $matches)) {
-            throw new InvalidArgumentException(sprintf('Invalid time format, expected HH:MM:SS, HH:MM or HH, got "%s"', is_string($where['value']) ? $where['value'] : get_debug_type($where['value'])));
+        if (!is_string($where['value']) || !preg_match('/^[0-2][0-9](:[0-6][0-9](:[0-6][0-9])?)?$/', $where['value'],
+                $matches)) {
+            throw new InvalidArgumentException(sprintf('Invalid time format, expected HH:MM:SS, HH:MM or HH, got "%s"',
+                is_string($where['value']) ? $where['value'] : get_debug_type($where['value'])));
         }
 
         $format = match (count($matches)) {
@@ -1495,7 +1500,7 @@ class Builder extends BaseBuilder
      */
     private function inheritConnectionOptions(array $options = []): array
     {
-        if (! isset($options['session'])) {
+        if (!isset($options['session'])) {
             $session = $this->connection->getSession();
             if ($session) {
                 $options['session'] = $session;
@@ -1617,7 +1622,7 @@ class Builder extends BaseBuilder
         }
 
         foreach ($values as $key => $value) {
-            if (! is_string($key)) {
+            if (!is_string($key)) {
                 continue;
             }
 
@@ -1625,7 +1630,8 @@ class Builder extends BaseBuilder
             if (str_contains($key, '->')) {
                 $newkey = str_replace('->', '.', $key);
                 if (array_key_exists($newkey, $values) && $value !== $values[$newkey]) {
-                    throw new InvalidArgumentException(sprintf('Cannot have both "%s" and "%s" fields.', $key, $newkey));
+                    throw new InvalidArgumentException(sprintf('Cannot have both "%s" and "%s" fields.', $key,
+                        $newkey));
                 }
 
                 $values[$newkey] = $value;
@@ -1637,7 +1643,8 @@ class Builder extends BaseBuilder
             if (str_ends_with($key, '.id')) {
                 $newkey = substr($key, 0, -3) . '._id';
                 if (array_key_exists($newkey, $values) && $value !== $values[$newkey]) {
-                    throw new InvalidArgumentException(sprintf('Cannot have both "%s" and "%s" fields.', $key, $newkey));
+                    throw new InvalidArgumentException(sprintf('Cannot have both "%s" and "%s" fields.', $key,
+                        $newkey));
                 }
 
                 $values[substr($key, 0, -3) . '._id'] = $value;
@@ -1668,9 +1675,11 @@ class Builder extends BaseBuilder
     public function aliasIdForResult(array|object $values): array|object
     {
         if (is_array($values)) {
-            if (array_key_exists('_id', $values) && ! array_key_exists('id', $values)) {
-                $values['id'] = $values['_id'];
-                unset($values['_id']);
+            if (config('sys.CONVERT_MONGO_ID_RESULT', true)) {
+                if (array_key_exists('_id', $values) && !array_key_exists('id', $values)) {
+                    $values['id'] = $values['_id'];
+                    unset($values['_id']);
+                }
             }
 
             foreach ($values as $key => $value) {
@@ -1684,9 +1693,11 @@ class Builder extends BaseBuilder
         }
 
         if ($values instanceof stdClass) {
-            if (property_exists($values, '_id') && ! property_exists($values, 'id')) {
-                $values->id = $values->_id;
-                unset($values->_id);
+            if (config('sys.CONVERT_MONGO_ID_RESULT', true)) {
+                if (property_exists($values, '_id') && !property_exists($values, 'id')) {
+                    $values->id = $values->_id;
+                    unset($values->_id);
+                }
             }
 
             foreach (get_object_vars($values) as $key => $value) {
